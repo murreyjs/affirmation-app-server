@@ -11,6 +11,7 @@ object Constants {
     }
 
     object Env {
+        // TODO: these should be lowercase and use `.`
         const val OPEN_AI_KEY = "OPEN_AI_KEY"
         const val HTTP_PORT = "HTTP_PORT"
         const val HTTPS_PORT = "HTTPS_PORT"
