@@ -36,6 +36,14 @@ tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+tasks.register("stage") {
+    dependsOn("clean", "build")
+}
+
+tasks.named("build") {
+    mustRunAfter("clean")
+}
+
 application {
     mainClass.set("MainKt")
 }
