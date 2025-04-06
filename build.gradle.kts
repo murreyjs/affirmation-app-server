@@ -38,10 +38,15 @@ tasks.withType<KotlinCompile> {
 
 tasks.register("stage") {
     dependsOn("clean", "build")
+    dependsOn("installDist")
 }
 
 tasks.named("build") {
     mustRunAfter("clean")
+}
+
+tasks.jar {
+    archiveFileName.set("affirmations-app-server.jar")
 }
 
 application {

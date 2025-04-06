@@ -1,1 +1,1 @@
-web: ./gradlew run
+web: java -jar build/libs/affirmations-app-server.jar

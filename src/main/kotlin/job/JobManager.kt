@@ -13,6 +13,7 @@ class JobManager {
     private val jobs = ConcurrentHashMap<String, Job>()
     private val jobChannel = Channel<Job>(Channel.UNLIMITED)
     private val apiKey = System.getenv(Constants.Env.OPEN_AI_KEY)
+        ?: throw IllegalStateException("Please ensure $${Constants.Env.OPEN_AI_KEY} environment variable is set")
 
     init {
         CoroutineScope(Dispatchers.Default).launch {
