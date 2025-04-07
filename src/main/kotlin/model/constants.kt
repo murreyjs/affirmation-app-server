@@ -11,9 +11,8 @@ object Constants {
     }
 
     object Env {
-        const val OPEN_AI_KEY = "openai.key"
-        const val HTTP_PORT = "port.http"
-        const val HTTPS_PORT = "port.https"
+        const val OPEN_AI_KEY = "OPEN_AI_KEY"
+        const val PORT = "PORT"
     }
 
     object Requests {

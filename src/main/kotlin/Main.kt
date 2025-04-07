@@ -8,18 +8,15 @@ import io.ktor.server.routing.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.http.content.*
-import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.routing.post
 import job.JobManager
 import kotlinx.serialization.json.Json
 import model.*
 import model.Constants.Routes.JOB_ID_PARAM
 
-
 fun main() {
     val jobManager = JobManager()
-    val httpPort = System.getenv(Constants.Env.HTTP_PORT)?.toInt() ?: 8080
-    val httpsPort = System.getenv(Constants.Env.HTTPS_PORT)?.toInt() ?: 8443
+    val httpPort = System.getenv(Constants.Env.PORT)?.toInt() ?: 8080
 
     val environment = applicationEngineEnvironment {
         // Configure module
@@ -28,17 +25,18 @@ fun main() {
                 json(Json { prettyPrint = true })
             }
 
-            install(CORS) {
-                allowHost("localhost:3000", schemes = listOf("http", "https"))
-                allowMethod(HttpMethod.Options)
-                allowMethod(HttpMethod.Put)
-                allowMethod(HttpMethod.Delete)
-                allowMethod(HttpMethod.Patch)
-                allowHeader(HttpHeaders.Authorization)
-                allowHeader(HttpHeaders.ContentType)
-                allowCredentials = true
-                maxAgeInSeconds = 3600
-            }
+            // uncomment for local testing
+//            install(CORS) {
+//                allowHost("localhost:3000", schemes = listOf("http", "https"))
+//                allowMethod(HttpMethod.Options)
+//                allowMethod(HttpMethod.Put)
+//                allowMethod(HttpMethod.Delete)
+//                allowMethod(HttpMethod.Patch)
+//                allowHeader(HttpHeaders.Authorization)
+//                allowHeader(HttpHeaders.ContentType)
+//                allowCredentials = true
+//                maxAgeInSeconds = 3600
+//            }
 
             // Define your routes
             routing {
@@ -90,16 +88,16 @@ fun main() {
             host = "0.0.0.0"
         }
 
-        // Configure HTTPS connector
-        sslConnector(
-            keyStore = loadKeyStore(),
-            keyAlias = "myalias",
-            keyStorePassword = { "password".toCharArray() },
-            privateKeyPassword = { "password".toCharArray() }
-        ) {
-            port = httpsPort
-            host = "0.0.0.0"
-        }
+        // HTTPS not needed for heroku
+//        sslConnector(
+//            keyStore = loadKeyStore(),
+//            keyAlias = "myalias",
+//            keyStorePassword = { "password".toCharArray() },
+//            privateKeyPassword = { "password".toCharArray() }
+//        ) {
+//            port = httpsPort
+//            host = "0.0.0.0"
+//        }
     }
 
     // Start the server with the environment
