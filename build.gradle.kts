@@ -46,6 +46,10 @@ tasks.named("build") {
 }
 
 tasks.jar {
+    manifest {
+        attributes(mapOf("Main-Class" to "Main"))
+    }
+
     archiveFileName.set("affirmations-app-server.jar")
 }
 

@@ -1,1 +1,1 @@
-web: java -jar build/libs/affirmations-app-server.jar
+web: java -Xmx256m -jar build/libs/affirmations-app-server.jar
