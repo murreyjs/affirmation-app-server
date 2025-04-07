@@ -47,8 +47,11 @@ tasks.named("build") {
 
 tasks.jar {
     manifest {
-        attributes(mapOf("Main-Class" to "Main"))
+        attributes["Main-Class"] = "MainKt"
     }
+
+    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     archiveFileName.set("affirmations-app-server.jar")
 }
