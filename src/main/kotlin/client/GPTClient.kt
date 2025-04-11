@@ -3,7 +3,7 @@ package client
 import io.ktor.server.plugins.*
 import model.Constants
 import model.Prompt
-import model.Result
+import model.SpeechResult
 import model.Voice
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -25,7 +25,6 @@ class GPTClient(private val apiKey: String) {
         private const val CONTENT = "content"
         private const val CONTENT_TYPE = "Content-Type"
         private const val INPUT = "input"
-        private const val MAX_TOKENS = "max_tokens"
         private const val MESSAGE = "message"
         private const val MESSAGES = "messages"
         private const val MODEL = "model"
@@ -33,6 +32,7 @@ class GPTClient(private val apiKey: String) {
         private const val RESPONSE_FORMAT = "response_format"
         private const val ROLE = "role"
         private const val SPEED = "speed"
+        private const val SYSTEM = "system"
         private const val USER = "user"
         private const val VOICE = "voice"
     }
@@ -62,7 +62,7 @@ class GPTClient(private val apiKey: String) {
         voice: Voice = Voice.ALLOY,
         outputFormat: String = MP3,
         speed: Double = 1.0,
-    ): Result {
+    ): SpeechResult {
         val requestBody = buildTextToSpeechRequestBody(model, text, voice, outputFormat, speed)
         val request = buildTextToSpeechRequest(requestBody)
         val response = client.newCall(request).execute()
@@ -78,8 +78,10 @@ class GPTClient(private val apiKey: String) {
     private fun buildPromptRequestBody(prompt: Prompt): RequestBody {
         return JSONObject()
             .put(MODEL, Constants.Models.GPT_4O_MINI)
-            .put(MESSAGES, listOf(mapOf(ROLE to USER, CONTENT to prompt)))
-            .put(MAX_TOKENS, 100)
+            .put(MESSAGES, listOf(
+                mapOf(ROLE to SYSTEM, CONTENT to "You are a meditation generator. Always respond with ONLY the meditation text itself, without any introduction, explanation, or conclusion. Never prefix your response with phrases like 'Here is a meditation:' or similar text. Begin speaking directly as if guiding the meditation."),
+                mapOf(ROLE to USER, CONTENT to prompt)
+            ))
             .toString()
             .toRequestBody(APPLICATION_JSON.toMediaTypeOrNull())
     }

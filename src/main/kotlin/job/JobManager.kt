@@ -1,5 +1,6 @@
 package job
 
+import client.ElevenLabsClient
 import client.GPTClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,8 +13,10 @@ import java.util.concurrent.ConcurrentHashMap
 class JobManager {
     private val jobs = ConcurrentHashMap<String, Job>()
     private val jobChannel = Channel<Job>(Channel.UNLIMITED)
-    private val apiKey = System.getenv(Constants.Env.OPEN_AI_KEY)
+    private val gptApiKey = System.getenv(Constants.Env.OPEN_AI_KEY)
         ?: throw IllegalStateException("Please ensure $${Constants.Env.OPEN_AI_KEY} environment variable is set")
+    private val labsKey = System.getenv(Constants.Env.ELEVEN_LABS_KEY)
+        ?: throw IllegalStateException("Please ensure $${Constants.Env.ELEVEN_LABS_KEY} environment variable is set")
 
     init {
         CoroutineScope(Dispatchers.Default).launch {
@@ -23,10 +26,11 @@ class JobManager {
         }
     }
 
-    fun createJob(prompt: String): Job {
+    fun createJob(request: SubmitRequest): Job {
         val job = Job(
             id = UUID.randomUUID().toString(),
-            prompt = prompt,
+            prompt = request.prompt,
+            voice = request.voice,
             status = JobStatus.QUEUED
         )
         jobs[job.id] = job
@@ -47,7 +51,7 @@ class JobManager {
     private fun processJob(job: Job) {
         try {
             job.status = JobStatus.PROCESSING
-            val result = promptForAudio(job.prompt)
+            val result = promptForAudio(job)
             job.status = JobStatus.COMPLETED
             job.result = result
         } catch (e: Exception) {
@@ -56,9 +60,9 @@ class JobManager {
         }
     }
 
-    private fun promptForAudio(prompt: String): Result? {
-        val gptClient = GPTClient(apiKey)
-        val response = gptClient.prompt(prompt)
-        return response?.let { gptClient.textToSpeech(it) }
+    private fun promptForAudio(job: Job): SpeechResult? {
+        val gptClient = GPTClient(gptApiKey)
+        val response = gptClient.prompt(job.prompt)
+        return response?.let { gptClient.textToSpeech(it, voice = job.voice) }
     }
 }

@@ -8,6 +8,7 @@ import io.ktor.server.routing.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.http.content.*
+import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.routing.post
 import job.JobManager
 import kotlinx.serialization.json.Json
@@ -26,17 +27,17 @@ fun main() {
             }
 
             // uncomment for local testing
-//            install(CORS) {
-//                allowHost("localhost:3000", schemes = listOf("http", "https"))
-//                allowMethod(HttpMethod.Options)
-//                allowMethod(HttpMethod.Put)
-//                allowMethod(HttpMethod.Delete)
-//                allowMethod(HttpMethod.Patch)
-//                allowHeader(HttpHeaders.Authorization)
-//                allowHeader(HttpHeaders.ContentType)
-//                allowCredentials = true
-//                maxAgeInSeconds = 3600
-//            }
+            install(CORS) {
+                allowHost("localhost:3000", schemes = listOf("http", "https"))
+                allowMethod(HttpMethod.Options)
+                allowMethod(HttpMethod.Put)
+                allowMethod(HttpMethod.Delete)
+                allowMethod(HttpMethod.Patch)
+                allowHeader(HttpHeaders.Authorization)
+                allowHeader(HttpHeaders.ContentType)
+                allowCredentials = true
+                maxAgeInSeconds = 3600
+            }
 
             // Define your routes
             routing {
@@ -56,7 +57,7 @@ fun main() {
                 route("/api") {
                     post(Constants.Routes.SUBMIT_PROMPT) {
                         val request = call.receive<SubmitRequest>()
-                        val job = jobManager.createJob(request.prompt)
+                        val job = jobManager.createJob(request)
                         call.respond(HttpStatusCode.Accepted, SubmitResponse(job.id))
                     }
 
@@ -104,9 +105,9 @@ fun main() {
     embeddedServer(Netty, environment).start(wait = true)
 }
 
-fun loadKeyStore(): java.security.KeyStore {
-    val keyStore = java.security.KeyStore.getInstance("JKS")
-    val fis = object {}.javaClass.getResourceAsStream("keystore/keystore.jks")
-    keyStore.load(fis, "password".toCharArray())
-    return keyStore
-}
+//fun loadKeyStore(): java.security.KeyStore {
+//    val keyStore = java.security.KeyStore.getInstance("JKS")
+//    val fis = object {}.javaClass.getResourceAsStream("keystore/keystore.jks")
+//    keyStore.load(fis, "password".toCharArray())
+//    return keyStore
+//}

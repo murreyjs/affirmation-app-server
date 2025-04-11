@@ -12,6 +12,7 @@ object Constants {
 
     object Env {
         const val OPEN_AI_KEY = "OPEN_AI_KEY"
+        const val ELEVEN_LABS_KEY = "ELEVEN_LABS_KEY"
         const val PORT = "PORT"
     }
 

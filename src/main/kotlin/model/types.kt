@@ -6,7 +6,7 @@ typealias JobId = String
 
 typealias Prompt = String
 
-typealias Result = ByteArray
+typealias SpeechResult = ByteArray
 
 typealias Error = String
 

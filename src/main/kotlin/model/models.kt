@@ -14,7 +14,7 @@ data class SubmitResponse(val jobId: JobId)
 @Serializable
 data class StatusResponse(
     val status: JobStatus,
-    val result: Result? = null,
+    val result: SpeechResult? = null,
     val error: Error? = null,
 )
 
@@ -27,7 +27,8 @@ data class VoiceInfo(
 data class Job(
     val id: JobId,
     val prompt: Prompt,
+    val voice: Voice,
     var status: JobStatus,
-    var result: Result? = null,
+    var result: SpeechResult? = null,
     var error: Error? = null
 )
