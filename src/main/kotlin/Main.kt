@@ -27,17 +27,17 @@ fun main() {
             }
 
             // uncomment for local testing
-            install(CORS) {
-                allowHost("localhost:3000", schemes = listOf("http", "https"))
-                allowMethod(HttpMethod.Options)
-                allowMethod(HttpMethod.Put)
-                allowMethod(HttpMethod.Delete)
-                allowMethod(HttpMethod.Patch)
-                allowHeader(HttpHeaders.Authorization)
-                allowHeader(HttpHeaders.ContentType)
-                allowCredentials = true
-                maxAgeInSeconds = 3600
-            }
+//            install(CORS) {
+//                allowHost("localhost:3000", schemes = listOf("http", "https"))
+//                allowMethod(HttpMethod.Options)
+//                allowMethod(HttpMethod.Put)
+//                allowMethod(HttpMethod.Delete)
+//                allowMethod(HttpMethod.Patch)
+//                allowHeader(HttpHeaders.Authorization)
+//                allowHeader(HttpHeaders.ContentType)
+//                allowCredentials = true
+//                maxAgeInSeconds = 3600
+//            }
 
             // Define your routes
             routing {
