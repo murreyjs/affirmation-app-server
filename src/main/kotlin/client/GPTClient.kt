@@ -13,6 +13,11 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 
+/**
+ * Client for interacting with OpenAI's GPT API services.
+ *
+ * @property apiKey The OpenAI API key used for authentication.
+ */
 class GPTClient(private val apiKey: String) {
     private val client = OkHttpClient()
 
@@ -37,6 +42,19 @@ class GPTClient(private val apiKey: String) {
         private const val VOICE = "voice"
     }
 
+    /**
+     * Sends a prompt to the OpenAI API and returns the generated response content.
+     *
+     * This method communicates with the OpenAI API to generate a response based on the provided prompt.
+     * It builds the request, executes it, and processes the API response to extract the content.
+     *
+     * @param prompt The [Prompt] containing the text to send to the OpenAI API.
+     *
+     * @return The generated content string from the API response, or null if no content is available.
+     *
+     * @throws IllegalStateException If the API response contains no choices.
+     * @throws BadRequestException If the API request fails with an error code.
+     */
     fun prompt(prompt: Prompt): String? {
         val requestBody = buildPromptRequestBody(prompt)
         val request = buildPromptRequest(requestBody)
@@ -56,6 +74,23 @@ class GPTClient(private val apiKey: String) {
         }
     }
 
+    /**
+     * Converts text to speech using the OpenAI Text-to-Speech API.
+     *
+     * This method takes a text input and various configuration parameters to generate
+     * an audio file containing the synthesized speech.
+     *
+     * @param text The text content to convert to speech.
+     * @param model The OpenAI TTS model to use, defaults to TTS_1.
+     * @param voice The voice type to use for speech synthesis, defaults to ALLOY.
+     * @param outputFormat The audio format for the output file, defaults to MP3.
+     * @param speed The playback speed of the generated audio, defaults to 1.0.
+     *
+     * @return [SpeechResult] containing the binary audio data.
+     *
+     * @throws BadRequestException If the API request fails with an error code.
+     * @throws Exception If the response body is empty.
+     */
     fun textToSpeech(
         text: String,
         model: String = Constants.Models.TTS_1,
@@ -75,17 +110,45 @@ class GPTClient(private val apiKey: String) {
             ?: throw Exception("Response body is empty")
     }
 
+    /**
+     * Builds the request body for a prompt API call.
+     *
+     * Creates a JSON object containing the model specification and message array
+     * for communication with the OpenAI Completions API. The system message configures
+     * the AI to respond as a meditation generator.
+     *
+     * @param prompt The Prompt object containing the user's input.
+     *
+     * @return RequestBody object containing the formatted JSON request.
+     */
     private fun buildPromptRequestBody(prompt: Prompt): RequestBody {
         return JSONObject()
             .put(MODEL, Constants.Models.GPT_4O_MINI)
             .put(MESSAGES, listOf(
-                mapOf(ROLE to SYSTEM, CONTENT to "You are a meditation generator. Always respond with ONLY the meditation text itself, without any introduction, explanation, or conclusion. Never prefix your response with phrases like 'Here is a meditation:' or similar text. Begin speaking directly as if guiding the meditation."),
+                mapOf(ROLE to SYSTEM, CONTENT to "You are a meditation generator. Always respond with ONLY the " +
+                    "meditation text itself, without any introduction, explanation, or conclusion. Never prefix " +
+                    "your response with phrases like 'Here is a meditation:' or similar text. Begin speaking " +
+                    "directly as if guiding the meditation."),
                 mapOf(ROLE to USER, CONTENT to prompt)
             ))
             .toString()
             .toRequestBody(APPLICATION_JSON.toMediaTypeOrNull())
     }
 
+    /**
+     * Builds the request body for a text-to-speech API call.
+     *
+     * Creates a JSON object with the necessary parameters for the OpenAI TTS API,
+     * including the model, input text, voice selection, output format, and playback speed.
+     *
+     * @param model The OpenAI TTS model identifier.
+     * @param text The text to convert to speech.
+     * @param voice The voice type to use for synthesis.
+     * @param outputFormat The desired audio format for the output.
+     * @param speed The playback speed multiplier.
+     *
+     * @return RequestBody object containing the formatted JSON request.
+     */
     private fun buildTextToSpeechRequestBody(
         model: String,
         text: String,
@@ -104,6 +167,16 @@ class GPTClient(private val apiKey: String) {
         .toRequestBody("$APPLICATION_JSON; $CHARSET_UTF_8".toMediaType())
     }
 
+    /**
+     * Builds an HTTP request for the OpenAI Completions API.
+     *
+     * Creates a Request object with the appropriate URL, headers (including API authentication),
+     * and request body for communicating with the OpenAI Completions endpoint.
+     *
+     * @param requestBody The JSON request body to send.
+     *
+     * @return Request object configured for the OpenAI Completions API.
+     */
     private fun buildPromptRequest(requestBody: RequestBody): Request {
         return  Request.Builder().url(Constants.Requests.OPEN_AI_COMPLETIONS)
             .addHeader(CONTENT_TYPE, APPLICATION_JSON)
@@ -111,6 +184,16 @@ class GPTClient(private val apiKey: String) {
             .post(requestBody).build()
     }
 
+    /**
+     * Builds an HTTP request for the OpenAI Text-to-Speech API.
+     *
+     * Creates a Request object with the appropriate URL, headers (including API authentication),
+     * and request body for communicating with the OpenAI TTS endpoint.
+     *
+     * @param requestBody The JSON request body to send.
+     *
+     * @return Request object configured for the OpenAI TTS API.
+     */
     private fun buildTextToSpeechRequest(requestBody: RequestBody): Request {
         return Request.Builder()
             .url(Constants.Requests.OPEN_AI_TTS)

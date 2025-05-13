@@ -14,16 +14,17 @@ repositories {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-core:2.3.7")
-    implementation("io.ktor:ktor-server-netty:2.3.7")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
-    implementation("io.ktor:ktor-server-content-negotiation:2.3.7")
-    implementation("io.ktor:ktor-server-cors:2.3.7")
     implementation("io.ktor:ktor-server-compression:2.3.7")
+    implementation("io.ktor:ktor-server-content-negotiation:2.3.7")
+    implementation("io.ktor:ktor-server-core:2.3.7")
+    implementation("io.ktor:ktor-server-cors:2.3.7")
+    implementation("io.ktor:ktor-server-netty:2.3.7")
+    implementation("io.ktor:ktor-server-resources:2.3.0")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("ch.qos.logback:logback-classic:1.4.11")
     implementation("com.squareup.okhttp3:okhttp:4.2.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.json:json:20231013")
     testImplementation(kotlin("test"))
 }
